@@ -1,4 +1,4 @@
-SOURCES = cgen_c_headers.lua  cgen_common.lua  cgen_verilog.lua  cgen_vhdl.lua  target_wishbone.lua  wbgen_common.lua  wbgen_main.lua  wbgen_rams.lua  wbgen_regbank.lua  wbgen_eic.lua
+SOURCES = cgen_c_headers.lua  cgen_common.lua  cgen_verilog.lua  cgen_vhdl.lua  target_wishbone.lua  wbgen_common.lua  wbgen_main.lua  wbgen_rams.lua  wbgen_regbank.lua  wbgen_eic.lua cgen_epics_db.lua
 OUTPUT = wbgen2
 
 VHDL_LIBRARY = lib/wbgen2_dpssram.vhd lib/wbgen2_eic.vhd

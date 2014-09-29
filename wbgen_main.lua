@@ -38,6 +38,7 @@ local commands_string = [[options:
   -C, --co=FILE           Write the slave's generated C header file to FILE
   -f, --docformat=FORMAT  Write documentation for latex, texinfo or HTML (defaults to HTML)
   -D, --doco=FILE         Write the slave's generated documentation to FILE
+  -E, --epicsdb=FILE      Write the slave's generated epics db FILE
   -h, --help              Show this help text
   -l, --lang=LANG         Set the output Hardware Description Language (HDL) to LANG
                           Valid values for LANG: {vhdl,verilog}
@@ -70,6 +71,7 @@ function parse_args(arg)
 	   co		= "C",
 	   docformat	= "f",
 	   doco		= "D",
+	   epicsdb	= "E",
 	   constco	= "K",
 	   lang		= "l",
 	   vo		= "V",
@@ -81,7 +83,7 @@ function parse_args(arg)
 	local optarg
 	local optind
 
-	optarg,optind = alt_getopt.get_opts (arg, "hvC:D:K:l:V:s:f:H:p:", long_opts)
+	optarg,optind = alt_getopt.get_opts (arg, "hvC:D:E:K:l:V:s:f:H:p:", long_opts)
 	for key,value in pairs (optarg) do
 		if key == "h" then
 			usage_complete()
@@ -96,6 +98,9 @@ function parse_args(arg)
 
 		elseif key == "D" then
 			options.output_doc_file = value
+
+		elseif key == "E" then
+			options.output_epics_db_file = value
 
 		elseif key == "K" then
 			options.output_vlog_constants_file = value
@@ -198,6 +203,12 @@ end
 if(options.output_c_header_file ~= nil) then
 	cgen_generate_init(options.output_c_header_file)
 	cgen_generate_c_header_code();
+	cgen_generate_done();
+end
+
+if(options.output_epics_db_file ~= nil) then
+	cgen_generate_init(options.output_epics_db_file)
+	cgen_generate_epics_db_code();
 	cgen_generate_done();
 end
 

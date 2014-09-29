@@ -42,9 +42,12 @@ pkg: $(WBINPUT:.wb=_pkg.vhd)
 %.html: %.wb
 	wbgen2 --docformat=html --doco=$@ $<
 
+%.db: %.wb
+	wbgen2 --epicsdb=$@ $<
+
 %.tex: %.wb
 	wbgen2 --docformat=latex --docu=$@ $<
-	
+
 %_pkg.vhd: %.wb
 	wbgen2 --vo=$*.vhdl --vpo=$@ --hstyle=record $<
 
