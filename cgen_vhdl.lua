@@ -114,10 +114,10 @@ function cgen_vhdl_package()
 	 emit("variable tmp: std_logic_vector(x'length-1 downto 0);");
    emit("begin");
    emit("for i in 0 to x'length-1 loop");
-   emit("if(x(i) = 'X' or x(i) = 'U') then");
-   emit("tmp(i):= '0';");
+   emit("if x(i) = '1' then");
+   emit("tmp(i):= '1';");
    emit("else");
-   emit("tmp(i):=x(i);");
+   emit("tmp(i):= '0';");
    emit("end if; ");
    emit("end loop; ");
    emit("return tmp;");
