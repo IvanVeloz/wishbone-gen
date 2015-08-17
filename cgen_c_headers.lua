@@ -30,6 +30,14 @@ function cgen_c_field_define(field, reg, index)
       field.nbfp=0;
    end
    
+   if(field.sign == nil) then
+      if (field.nbfp > 0) then
+          field.sign=2;	--For fixed point by default we use 2complements signess
+      else
+          field.sign=0; --Otherwise we use unsigned
+      end
+   end
+   
    emit("");
    emit("/* definitions for field: "..field.name.." in reg: "..reg.name.." */");
    if(options.c_reg_style == "extended")  then
@@ -40,6 +48,7 @@ function cgen_c_field_define(field, reg, index)
       emit(string.format("%-45s %s", "#define "..prefix.."_DESC", "WBGEN2_DESC(\""..field.description:gsub("\n.*", "").."\")"));
       emit(string.format("%-45s %s", "#define "..prefix.."_ACCESS", "WBGEN2_"..rw_table[field.access_bus]));
       emit(string.format("%-45s %d", "#define "..prefix.."_NBFP", field.nbfp));
+      emit(string.format("%-45s %d", "#define "..prefix.."_SIGN", field.sign));
       if(field.type == BIT or field.type == MONOSTABLE)  then
         emit(string.format("%-45s %s", "#define "..prefix.."_MASK", "WBGEN2_GEN_MASK("..field.offset..", "..field.size..")"));
         emit(string.format("%-45s %d", "#define "..prefix.."_SHIFT", field.offset));
