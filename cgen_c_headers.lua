@@ -220,6 +220,7 @@ function cgen_c_defines()
 			         emit(string.format("%-45s %s", "#define "..prefix.."_PREFIX", "\""..reg.c_prefix.."\""));
 			         emit(string.format("%-45s %s", "#define "..prefix.."_NAME", "\""..reg.name.."\""));
 			         emit(string.format("%-45s %s", "#define "..prefix.."_DESC", "WBGEN2_DESC(\""..reg.description:gsub("\n.*", "").."\")"));
+			         emit(string.format("%-45s %s", "#define "..prefix.."_NFIELDS", reg.num_fields));
 			      end
 			      emit(string.format("%-45s %s","#define "..string.upper(periph.c_prefix).."_REG_"..string.upper(reg.c_prefix),
 			      string.format("0x%08x", reg.base * DATA_BUS_WIDTH/8)));
