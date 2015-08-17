@@ -37,7 +37,8 @@ function cgen_db_field_records(field, reg, index)
 			emit("{");
 			if(field.nbfp ~= nil and field.nbfp > 0) then
 				emit(string.format("\tfield(%-5s,\"%s\")",		"DTYP",	"asynFloat64"));
-				emit(string.format("\tfield(%-5s,\"%s\")",		"PREC",	"3"));
+				precision=math.ceil(math.log10(math.pow(2,field.nbfp)));
+				emit(string.format("\tfield(%-5s,\"%d\")",		"PREC",	precision));
 			else
 				emit(string.format("\tfield(%-5s,\"%s\")",		"DTYP",	"asynInt32"));
 			end
@@ -60,7 +61,8 @@ function cgen_db_field_records(field, reg, index)
 			emit("{");
 			if(field.nbfp ~= nil and field.nbfp > 0) then
 				emit(string.format("\tfield(%-5s,\"%s\")",		"DTYP",	"asynFloat64"));
-				emit(string.format("\tfield(%-5s,\"%s\")",		"PREC",	"3"));
+				precision=math.ceil(math.log10(math.pow(2,field.nbfp)));
+				emit(string.format("\tfield(%-5s,\"%d\")",		"PREC",	precision));
 			else
 				emit(string.format("\tfield(%-5s,\"%s\")",		"DTYP",	"asynInt32"));
 			end
