@@ -18,7 +18,7 @@
 -- MA 02111-1307, USA.
 --
 
-wbgen2_version="0.7.0-epics"
+wbgen2_version="0.7.1-epics"
 
 options = {};
 options.reset_type = "asynchronous";
