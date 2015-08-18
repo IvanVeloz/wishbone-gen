@@ -49,6 +49,7 @@ function cgen_c_field_define(field, reg, index)
       emit(string.format("%-45s %s", "#define "..prefix.."_ACCESS", "WBGEN2_"..rw_table[field.access_bus]));
       emit(string.format("%-45s %d", "#define "..prefix.."_NBFP", field.nbfp));
       emit(string.format("%-45s %d", "#define "..prefix.."_SIGN", field.sign));
+      emit(string.format("%-45s %d", "#define "..prefix.."_SIZE", field.size));
       if(field.type == BIT or field.type == MONOSTABLE)  then
         emit(string.format("%-45s %d", "#define "..prefix.."_SHIFT", field.offset));
         emit(string.format("%-45s %s", "#define "..prefix.."_MASK", "WBGEN2_GEN_MASK("..field.offset..", "..field.size..")"));
