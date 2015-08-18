@@ -50,8 +50,8 @@ function cgen_c_field_define(field, reg, index)
       emit(string.format("%-45s %d", "#define "..prefix.."_NBFP", field.nbfp));
       emit(string.format("%-45s %d", "#define "..prefix.."_SIGN", field.sign));
       if(field.type == BIT or field.type == MONOSTABLE)  then
-        emit(string.format("%-45s %s", "#define "..prefix.."_MASK", "WBGEN2_GEN_MASK("..field.offset..", "..field.size..")"));
         emit(string.format("%-45s %d", "#define "..prefix.."_SHIFT", field.offset));
+        emit(string.format("%-45s %s", "#define "..prefix.."_MASK", "WBGEN2_GEN_MASK("..field.offset..", "..field.size..")"));
       end
    end
    
@@ -61,9 +61,8 @@ function cgen_c_field_define(field, reg, index)
 
    else 
       -- SLV/signed/unsigned fields: emit masks, shifts and access macros
-      
-      emit(string.format("%-45s %s", "#define "..prefix.."_MASK", "WBGEN2_GEN_MASK("..field.offset..", "..field.size..")"));
       emit(string.format("%-45s %d", "#define "..prefix.."_SHIFT", field.offset));
+      emit(string.format("%-45s %s", "#define "..prefix.."_MASK", "WBGEN2_GEN_MASK("..field.offset..", "..field.size..")"));
       emit(string.format("%-45s %s", "#define "..prefix.."_W(value)", "WBGEN2_GEN_WRITE(value, "..field.offset..", "..field.size..")"));
       
       -- if the field is signed, generate read operation with sign-extension
