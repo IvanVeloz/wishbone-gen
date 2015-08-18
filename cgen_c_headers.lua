@@ -256,7 +256,10 @@ function cgen_generate_c_header_code()
    emit(string.format("%-45s %s", "#define "..string.upper(periph.c_prefix).."_PERIPH_PREFIX", "\""..periph.c_prefix.."\""));
    emit(string.format("%-45s %s", "#define "..string.upper(periph.c_prefix).."_PERIPH_NAME", "\""..periph.name.."\""));
    emit(string.format("%-45s %s", "#define "..string.upper(periph.c_prefix).."_PERIPH_DESC", "WBGEN2_DESC(\""..periph.description:gsub("\n.*", "").."\")"));
-
+   if(options.c_reg_style == "extended" and periph.sdb_vendor ~= nil)  then
+      emit(string.format("%-45s %s", "#define "..string.upper(periph.c_prefix).."_PERIPH_VENID", "0x"..string.format("%016X",periph.sdb_vendor)));
+      emit(string.format("%-45s %s", "#define "..string.upper(periph.c_prefix).."_PERIPH_DEVID", "0x"..string.sub(md5.sumhexa(periph.hdl_entity),0,8)));
+   end
    emit("\n#endif");
    cgen_write_current_snippet();
 end
