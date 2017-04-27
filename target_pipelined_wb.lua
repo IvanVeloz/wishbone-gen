@@ -290,7 +290,17 @@ function gen_bus_logic_pipelined_wb(mode)
                  if(reg.optional == nil) then
                     table_join(code, ex_code)
                  else
-                    table_join(code, {vgenerate_if(vnot(vequal(reg.optional, 0)), ex_code )} ); 
+                    table_join(code, {vgenerate_if(vnot(vequal(reg.optional, 0)), ex_code )} );
+										-- also create complementary if-generate to drive unused outputs when condition is false
+										gen_ex_code = {}
+										for i, v in ipairs(reg.ports) do
+											 if v.dir == "out" then
+													table_join(gen_ex_code, {va(v.name, 0);});
+											 end
+										end
+										if gen_ex_code ~= nil then
+											 table_join(code, {vgenerate_if(vequal(reg.optional, 0), gen_ex_code )} );
+										end
                  end
 
 							end);
