@@ -142,7 +142,25 @@ dofile(input_wb_file);
 
 if(periph == nil) then die ("missing peripheral declaration"); end
 
-    
+
+if (periph.version ~= nil) then
+   table.insert(periph, 1,
+		reg {
+		   name = "Version register";
+		   prefix = "VER";
+		   field {
+		      name = "Version identifier";
+		      prefix = "ID";
+		      description = "Version identifier for the peripheral";
+		      type = SLV;
+		      size = 32;
+		      access_bus = READ_WRITE;
+		      access_dev = READ_ONLY;
+		      reset_value = periph.version;
+		   }
+		}
+   );
+end
 
 foreach_field( fix_prefix );
 foreach_field( fix_access );

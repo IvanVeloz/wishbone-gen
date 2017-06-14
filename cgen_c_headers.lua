@@ -117,6 +117,11 @@ function cgen_c_fileheader()
    emit("#define WBGEN2_SIGN_EXTEND(value, bits) (((value) & (1<<bits) ? ~((1<<(bits))-1): 0 ) | (value))");
    emit("#endif");
    emit("");
+   if (periph.version ~= nil) then
+      emit("/* version definition */");
+      emit("#define WBGEN2_"..string.upper(periph.prefix).."_VERSION "..string.format('0x%08X', periph.version));
+      emit("");
+   end
 end
 
 -- generates C structure reflecting the memory map of the peripheral.
