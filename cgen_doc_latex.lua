@@ -54,6 +54,10 @@ function cgen_doc_lx_header_and_toc()
   emit('\\subsection{'..periph.name..'}');
   emit('\\label{subsec:wbgen:'..periph.prefix..'}');
 
+  if (periph.version ~= nil) then
+     emit(string.format('\[version 0x%08X\]\\\\', periph.version));
+  end
+
 	local t = periph.description;
 	if(t == nil) then t = ""; end
 	emit(string.gsub(t, "\n", "\\\\"));

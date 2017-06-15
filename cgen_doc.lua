@@ -311,6 +311,9 @@ function cgen_doc_header_and_toc()
 
 	emit('<h1 class="heading">'..periph.hdl_entity..'</h1>');
 	emit('<h3>'..periph.name..'</h3>');
+	if (periph.version ~= nil) then
+	   emit(string.format('<h3>[version 0x%08X]</h3>', periph.version));
+	end
 	local t = periph.description;
 	if(t == nil) then t = ""; end
 	emit('<p>'..string.gsub(t, "\n", "<br>")..'</p>');
