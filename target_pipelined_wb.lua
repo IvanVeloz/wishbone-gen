@@ -45,14 +45,8 @@ local width = math.max(1, address_bus_width);
 local wb_sigs = {  signal(SLV, MAX_ACK_LENGTH, "ack_sreg"),
 									 signal(SLV, DATA_BUS_WIDTH, "rddata_reg"),
 									 signal(SLV, DATA_BUS_WIDTH, "wrdata_reg"),
- 									 signal(SLV, DATA_BUS_WIDTH/8	, "bwsel_reg"),
 									 signal(SLV, width, "rwaddr_reg"),
-									 signal(BIT, 0, "ack_in_progress"),
- 									 signal(BIT, 0, "wr_int"),
- 									 signal(BIT, 0, "rd_int"),
-									 signal(SLV, DATA_BUS_WIDTH, "allones"),
-							 		 signal(SLV, DATA_BUS_WIDTH, "allzeros")
- 				
+									 signal(BIT, 0, "ack_in_progress")
 							 };
 
 	add_global_signals(wb_sigs);
@@ -179,15 +173,8 @@ function gen_bus_logic_pipelined_wb(mode)
 	fsmcode = { vif(vand(vequal("wb_cyc_i", 1), vequal("wb_stb_i", 1)), { fsmcode } ); };	
 
 		local code = {
-		vcomment("Some internal signals assignments. For (foreseen) compatibility with other bus standards.");
-
+		vcomment("Some internal signals assignments");
 		va("wrdata_reg", "wb_dat_i");
-		va("bwsel_reg", "wb_sel_i");	
-		va("rd_int", vand("wb_cyc_i", vand("wb_stb_i", vnot("wb_we_i"))));
-		va("wr_int", vand("wb_cyc_i", vand("wb_stb_i", "wb_we_i")));
-		va("allones", vothers(1));
-		va("allzeros", vothers(0));
-		
 		
 		vcomment("");
 		vcomment("Main register bank access process.");
