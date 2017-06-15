@@ -804,6 +804,9 @@ local e=io.open(t,"w");
 if(e==nil)then
 die("can't open "..t.." for writing.");
 end
+if(periph.version~=nil)then
+e.write(e,string.format("`define WBGEN2_%s_VERSION 32'h%08x\n",string.upper(periph.c_prefix),periph.version));
+end
 foreach_reg({TYPE_REG},function(a)
 e.write(e,string.format("`define %-30s %d'h%x\n","ADDR_"..string.upper(periph.c_prefix.."_"..a.c_prefix),address_bus_width+2,(DATA_BUS_WIDTH/8)*a.base));
 foreach_subfield(a,function(t)
@@ -1894,7 +1897,7 @@ emit("#endif");
 emit("");
 if(periph.version~=nil)then
 emit("/* version definition */");
-emit("#define WBGEN2_"..string.upper(periph.prefix).."_VERSION "..string.format('0x%08X',periph.version));
+emit("#define WBGEN2_"..string.upper(periph.c_prefix).."_VERSION "..string.format('0x%08X',periph.version));
 emit("");
 end
 end

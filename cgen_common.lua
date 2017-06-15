@@ -403,6 +403,10 @@ function cgen_gen_vlog_constants(filename)
  	if(file == nil) then
  		die("can't open "..filename.." for writing.");
  	end
+
+	if (periph.version ~= nil) then
+		 file.write(file, string.format("`define WBGEN2_%s_VERSION 32'h%08x\n", string.upper(periph.c_prefix), periph.version));
+	end
 	 
 	  foreach_reg({TYPE_REG}, function(reg) 
 				file.write(file, string.format("`define %-30s %d'h%x\n", "ADDR_"..string.upper(periph.c_prefix.."_"..reg.c_prefix), address_bus_width+2, (DATA_BUS_WIDTH/8) * reg.base));

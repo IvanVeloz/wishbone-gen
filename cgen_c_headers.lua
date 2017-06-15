@@ -122,7 +122,7 @@ function cgen_c_fileheader()
    emit("");
    if (periph.version ~= nil) then
       emit("/* version definition */");
-      emit("#define WBGEN2_"..string.upper(periph.prefix).."_VERSION "..string.format('0x%08X', periph.version));
+      emit("#define WBGEN2_"..string.upper(periph.c_prefix).."_VERSION "..string.format('0x%08X', periph.version));
       emit("");
    end
 end
