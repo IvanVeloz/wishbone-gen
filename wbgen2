@@ -2717,8 +2717,7 @@ function cgen_doc_lx_reg(t)
 local o="";
 local e="";
 cur_reg_no=cur_reg_no+1;
-emit("\\paragraph*{"..t.name.."}\\vspace{12pt}");
-emit("");
+emit("\\paragraph*{"..t.name.."}\\mbox\{\}\\\\\\vskip 6pt");
 local a=htable_new(4,2);
 a.data[1][1].text="{\\bf HW prefix:} ";
 a.data[2][1].text="{\\bf HW address:} ";
@@ -2779,8 +2778,7 @@ end
 cur_mem_no=1;
 function cgen_doc_lx_ram(t)
 local a="";
-emit("\\paragraph*{"..t.name.."}\\vspace{12pt}");
-emit("");
+emit("\\paragraph*{"..t.name.."}\\mbox\{\}\\\\\\vskip 6pt");
 cur_mem_no=cur_mem_no+1;
 local e=htable_new(11,2);
 e.data[1][1].text="{\\bf HW prefix:} ";
@@ -2831,7 +2829,7 @@ end
 cur_irq_no=1;
 function cgen_doc_lx_irq(a)
 local e="";
-emit("\\paragraph*{"..a.name.."}\\vspace{12pt}");
+emit("\\paragraph*{"..a.name.."}\\mbox\{\}\\\\\\vskip 6pt");
 cur_irq_no=cur_irq_no+1;
 local t=htable_new(3,2);
 t.data[1][1].text="{\\bf HW prefix:} ";

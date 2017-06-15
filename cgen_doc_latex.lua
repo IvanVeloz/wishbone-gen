@@ -213,8 +213,7 @@ function cgen_doc_lx_reg(reg)
 
 	cur_reg_no = cur_reg_no + 1;
 
-  emit("\\paragraph*{"..reg.name.."}\\vspace{12pt}");
-  emit("");
+  emit("\\paragraph*{"..reg.name.."}\\mbox\{\}\\\\\\vskip 6pt");
 
 	local tbl = htable_new(4, 2);
 	
@@ -292,8 +291,8 @@ cur_mem_no = 1;
 function cgen_doc_lx_ram(ram)
   local description = "";
 
-  emit("\\paragraph*{"..ram.name.."}\\vspace{12pt}");
-  emit("");
+  emit("\\paragraph*{"..ram.name.."}\\mbox\{\}\\\\\\vskip 6pt");
+
 	cur_mem_no = cur_mem_no + 1;
 	
 	local tbl = htable_new(11, 2);
@@ -358,7 +357,7 @@ cur_irq_no = 1;
 function cgen_doc_lx_irq(irq)
   local description = "";
 
-  emit("\\paragraph*{"..irq.name.."}\\vspace{12pt}");
+  emit("\\paragraph*{"..irq.name.."}\\mbox\{\}\\\\\\vskip 6pt");
 	cur_irq_no = cur_irq_no + 1;
 	
 	local tbl = htable_new(3, 2);
