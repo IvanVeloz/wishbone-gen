@@ -3179,6 +3179,8 @@ t.extra_code={va(e.."_o",vir("wrdata_reg",t));};
 t.ackgen_code_pre={va(e.."_load_o",0);};
 t.ackgen_code={va(e.."_load_o",0);};
 t.reset_code_main={va(e.."_load_o",0);};
+elseif(t.access==ACC_WO_RO)then
+die("WO-RO type unsupported yet ("..t.name..")");
 end
 else
 if(t.access==ACC_RW_RO)then

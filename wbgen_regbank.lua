@@ -377,6 +377,10 @@ function gen_hdl_code_slv(field, reg)
 		    field.ackgen_code_pre = { va(prefix.."_load_o", 0);};
 		    field.ackgen_code = 		{ va(prefix.."_load_o", 0); };
 		    field.reset_code_main = { va(prefix.."_load_o", 0); };
+
+		elseif (field.access == ACC_WO_RO) then
+			 die("WO-RO type unsupported yet ("..field.name..")");
+
 		end
 	else
 -- asynchronous register. Even tougher shit :(
