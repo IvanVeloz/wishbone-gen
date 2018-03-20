@@ -97,8 +97,8 @@ function cgen_c_fileheader()
    emit ("");
    emit ("*/");
    emit("");
-   emit("#ifndef __WBGEN2_REGDEFS_"..string.upper(string.gsub(input_wb_file,"%.","_")))
-   emit("#define __WBGEN2_REGDEFS_"..string.upper(string.gsub(input_wb_file,"%.","_")))
+   emit("#ifndef __WBGEN2_REGDEFS_"..string.upper(string.gsub(string.gsub(input_wb_file,"(.*/)(.*)", "%2"), "%.", "_")));
+   emit("#define __WBGEN2_REGDEFS_"..string.upper(string.gsub(string.gsub(input_wb_file,"(.*/)(.*)", "%2"), "%.", "_")));
    emit("");
    emit("#ifdef __KERNEL__")
    emit("#include <linux/types.h>")
