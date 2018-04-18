@@ -47,8 +47,14 @@ local width = math.max(1, address_bus_width);
 local wb_sigs = {  signal(SLV, MAX_ACK_LENGTH, "ack_sreg"),
 									 signal(SLV, DATA_BUS_WIDTH, "rddata_reg"),
 									 signal(SLV, DATA_BUS_WIDTH, "wrdata_reg"),
+ 									 signal(SLV, DATA_BUS_WIDTH/8	, "bwsel_reg"),
 									 signal(SLV, width, "rwaddr_reg"),
-									 signal(BIT, 0, "ack_in_progress")
+									 signal(BIT, 0, "ack_in_progress"),
+ 									 signal(BIT, 0, "wr_int"),
+ 									 signal(BIT, 0, "rd_int"),
+									 signal(SLV, DATA_BUS_WIDTH, "allones"),
+							 		 signal(SLV, DATA_BUS_WIDTH, "allzeros")
+ 				
 							 };
 
 	add_global_signals(wb_sigs);
@@ -206,6 +212,17 @@ function gen_bus_logic_pipelined_wb(mode)
 
 -- we have some RAMs in our slave?
 	if(periph.ramcount > 0) then
+
+		 local ram_signals_code = {
+				vcomment("Some internal signals assignments used by RAMs.");
+				va("bwsel_reg", "wb_sel_i");
+				va("rd_int", vand("wb_cyc_i", vand("wb_stb_i", vnot("wb_we_i"))));
+				va("wr_int", vand("wb_cyc_i", vand("wb_stb_i", "wb_we_i")));
+				va("allones", vothers(1));
+				va("allzeros", vothers(0));
+		 };
+
+		 table_join(code, ram_signals_code);
 
 -- the data output is muxed between RAMs and register bank. Here we generate a combinatorial mux if we don't want the output to be registered. This gives us
 -- memory access time of 2 clock cycles. Otherwise the ram output is handled by the main process.
