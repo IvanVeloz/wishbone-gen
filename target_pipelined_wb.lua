@@ -8,8 +8,8 @@ MODE_PIPELINED=2
 
 function gen_pipelined_wb_ports(mode)
   local ports = {
-		port(BIT, 0, "in", "rst_n_i", "", VPORT_WB),
-		port(BIT, 0, "in", "clk_sys_i", "", VPORT_WB),
+		port(BIT, 0, "in", "rst_n_i", "", 0),
+		port(BIT, 0, "in", "clk_sys_i", "", 0),
 	};
 	
   if(address_bus_width > 0 ) then
@@ -23,7 +23,9 @@ function gen_pipelined_wb_ports(mode)
 										port(SLV, math.floor((DATA_BUS_WIDTH+7)/8), "in", "wb_sel_i", "", VPORT_WB),
 										port(BIT, 0, "in", "wb_stb_i", "", VPORT_WB),
 										port(BIT, 0, "in", "wb_we_i", "", VPORT_WB),
-										port(BIT, 0, "out", "wb_ack_o", "", VPORT_WB)
+										port(BIT, 0, "out", "wb_ack_o", "", VPORT_WB),
+										port(BIT, 0, "out", "wb_err_o", "", VPORT_WB),
+										port(BIT, 0, "out", "wb_rty_o", "", VPORT_WB)
    									});
 
 	if(mode == MODE_PIPELINED) then
@@ -295,12 +297,19 @@ function gen_bus_logic_pipelined_wb(mode)
 
 	
 	if(address_bus_width > 0) then
-		table_join(code, { 	va("rwaddr_reg", "wb_adr_i");	});
+      if(options.hdl_reg_style == "record_full") then
+		table_join(code, { 	va("rwaddr_reg", vi("wb_adr_i", address_bus_width + 2 - 1, 2) );	} );
+      else
+		table_join(code, { 	va("rwaddr_reg", "wb_adr_i" );	} );
+      end
+        
 	else
 		table_join(code, { 	va("rwaddr_reg", vothers(0));	});
 	end
 
 	table_join(code, { va("wb_stall_o", vand(vnot(vi("ack_sreg", 0)), vand("wb_stb_i","wb_cyc_i")))});
+	table_join(code, { va("wb_err_o", 0 ) } );
+	table_join(code, { va("wb_rty_o", 0 ) } );
 	
 	table_join(code, { vcomment("ACK signal generation. Just pass the LSB of ACK counter.");
 										 va("wb_ack_o", vi("ack_sreg", 0));

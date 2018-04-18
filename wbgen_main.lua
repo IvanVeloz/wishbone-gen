@@ -44,7 +44,7 @@ local commands_string = [[options:
   -s, --cstyle=STYLE      Set the style of register bank in generated C headers
                           Valid values for STYLE: {struct, defines}
   -H, --hstyle=STYLE      Set the style of register signals in generated VHDL/Verilog file
-                          Valid values for STYLE: {signals, record}
+                          Valid values for STYLE: {signals, record, record_full}
   -K, --constco=FILE      Populate FILE with Verilog output (mainly constants)
   -v, --version           Show version information
   -V, --vo=FILE           Write the slave's generated HDL code to FILE
@@ -120,7 +120,7 @@ function parse_args(arg)
 		elseif key == "p" then
                    options.output_package_file = value
                 elseif key == "H" then
-			if (value ~= "signals" and value ~= "record") then
+			if (value ~= "signals" and value ~= "record" and value ~= "record_full") then
 				die("Unknown register style: "..value);
 			end
                         options.hdl_reg_style = value
@@ -209,7 +209,7 @@ if(options.output_hdl_file ~= nil) then
    if (options.lang == "vhdl") then
       cgen_generate_vhdl_code(tree);
    elseif (options.lang == "verilog") then
-      --		cgen_generate_verilog_code(tree);
+      cgen_generate_verilog_code(tree);
    end
 end
 

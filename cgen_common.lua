@@ -217,6 +217,7 @@ end
 
 VPORT_WB = 1;
 VPORT_REG = 2;
+VPORT_CLK_RST = 3;
 
 -- constructor for a HDL port
 function port(type, nbits, dir, name, comment, extra_flags)
@@ -237,9 +238,15 @@ function port(type, nbits, dir, name, comment, extra_flags)
        if(extra_flags == VPORT_WB) then
           t.is_wb = true;
           t.is_reg_port = false;
+          t.is_clk_rst = false;
        elseif(extra_flags == VPORT_REG) then
           t.is_wb = false;
           t.is_reg_port = true;
+          t.is_clk_rst = false;
+       elseif(extra_flags == VPORT_CLK_RST) then
+          t.is_wb = false;
+          t.is_reg_port = false;
+          t.is_clk_rst = true;
        else
           t.is_wb =false
           t.is_reg_port = false;
