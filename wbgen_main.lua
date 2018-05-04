@@ -28,6 +28,7 @@ options.lang = "vhdl";
 options.c_reg_style = "struct";
 options.hdl_reg_style = "signals";
 options.doc_format = "html"
+options.unused_zeroes = false
 
 require "alt_getopt"
 
@@ -50,6 +51,7 @@ local commands_string = [[options:
   -V, --vo=FILE           Write the slave's generated HDL code to FILE
   -p, --vpo=FILE          Generate a VHDL package for slave's generated VHDL
                           (necessary with --hstyle=record)
+  -Z, --zeroes            Drive unused register bits to '0' instead of 'X'
 
 wbgen2 (c) Tomasz Wlostowski/CERN BE-CO-HT 2010-2012]]
 
@@ -75,13 +77,14 @@ function parse_args(arg)
 	   vo		= "V",
      vpo          = "p",
 	   cstyle       = "s",
+	   zeroes       = "Z",
      hstyle       = "H"
 	}
 
 	local optarg
 	local optind
 
-	optarg,optind = alt_getopt.get_opts (arg, "hvC:D:K:l:V:s:f:H:p:", long_opts)
+	optarg,optind = alt_getopt.get_opts (arg, "hvC:D:K:l:V:s:f:H:p:Z", long_opts)
 	for key,value in pairs (optarg) do
 		if key == "h" then
 			usage_complete()
@@ -119,6 +122,8 @@ function parse_args(arg)
 			options.output_hdl_file = value
 		elseif key == "p" then
                    options.output_package_file = value
+		elseif key == "Z" then
+			options.unused_zeroes = true
                 elseif key == "H" then
 			if (value ~= "signals" and value ~= "record" and value ~= "record_full") then
 				die("Unknown register style: "..value);

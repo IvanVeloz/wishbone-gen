@@ -653,7 +653,7 @@ function gen_hdl_code_constant(field, reg)
 end
 
 -- generates code which loads data unused bits of data output register with Xs 
-function fill_unused_bits(target, reg)
+function fill_unused_bits(target, reg, unused_zeroes)
 	local t={};
 	local code={};
 	local all_wo = true;
@@ -668,16 +668,21 @@ function fill_unused_bits(target, reg)
 												 if(field.access_bus ~= WRITE_ONLY) then all_wo = false; end
 												end);
 
+	if (unused_zeroes) then
+		 unused = 0;
+	else
+		 unused = vundefined();
+	end
 	if(all_wo) then
 		 for i = 0, DATA_BUS_WIDTH-1 do
-				 table_join(code, { va(vi(target, i), vundefined()); });
+				 table_join(code, { va(vi(target, i), unused); });
 		 end
 		 return code;
 	end
 
 	for i = 0, DATA_BUS_WIDTH-1 do
 		if(t[i] == nil) then
-			table_join(code, { va(vi(target, i), vundefined()); });
+			table_join(code, { va(vi(target, i), unused); });
 		end
 	end
 	

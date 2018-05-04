@@ -105,7 +105,7 @@ function gen_bus_logic_pipelined_wb(mode)
 		foreach_subfield(reg, function(field, reg) table_join(wcode, field.write_code); end );
 		foreach_subfield(reg, function(field, reg) table_join(rcode, field.read_code); end );		
 
-		local padcode = fill_unused_bits("rddata_reg", reg);
+		local padcode = fill_unused_bits("rddata_reg", reg, options.unused_zeroes);
 
 
 		table_join(wcode, reg.write_code);
