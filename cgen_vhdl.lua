@@ -18,6 +18,14 @@ fieldtype_2_vhdl[ENUM] = "std_logic_vector";
 fieldtype_2_vhdl[SLV] = "std_logic_vector";
 
 
+function get_pkg_name()
+  if (periph.hdl_package) then
+      return periph.hdl_package
+  else
+     return periph.hdl_prefix.."_wbgen2_pkg";
+   end
+end
+
 -- generates a string containing VHDL-compatible numeric constant of value [value] and size [numbits]
 function gen_vhdl_bin_literal(value, numbits)
  if(numbits == 1) then
@@ -50,9 +58,16 @@ function strip_periph_prefix(s)
    return string.gsub(s, "^"..periph.hdl_prefix.."\_", "")
 end
 
+function strip_wb_prefix(s)
+   local t = string.gsub(s, "^wb\_", "")
+    t = string.gsub(t, "_o$","")
+    t = string.gsub(t, "_i$","")
+    return t
+end
+
 -- fixme: do this neatly
 function port2record(s)
-   if(options.hdl_reg_style ~= "record") then
+   if(options.hdl_reg_style == "signals") then
       return s
    end
 
@@ -60,14 +75,23 @@ function port2record(s)
       if(port.name == s and port.is_reg_port) then
 		      return csel(port.dir=="in", "regs_i.", "regs_o.")..strip_periph_prefix(s)
       end
+
+      if(port.name == s and port.is_wb and options.hdl_reg_style == "record_full") then
+        if s == "wb_int_o" then
+          return "int_o";
+        end
+          
+		      return csel(port.dir=="in", "slave_i.", "slave_o.")..strip_wb_prefix(s)
+      end
+
    end
    return s
 end
 
 
 function cgen_vhdl_package()
-	local pkg_name = periph.hdl_prefix.."_wbgen2_pkg";
-   emit("package "..pkg_name.." is")
+   
+   emit("package "..get_pkg_name().." is")
    indent_right();
    emit("");
 
@@ -84,50 +108,68 @@ function cgen_vhdl_package()
 
 	 cgen_vhdl_port_struct("out");
 	   
-
-   
-   indent_left();
-
  	 local typename = "t_"..periph.hdl_prefix.."_in_registers";
 
+   emit("");
    emit("function \"or\" (left, right: "..typename..") return "..typename..";");
    emit("function f_x_to_zero (x:std_logic) return std_logic;");
    emit("function f_x_to_zero (x:std_logic_vector) return std_logic_vector;");
+   emit("");
 
+   cgen_vhdl_interface_declaration("component")
    indent_left();
-   indent_left();
+
    emit("end package;");
    
    emit("");
-   emit("package body "..pkg_name.." is");
-
+   emit("package body "..get_pkg_name().." is");
+    indent_right();
    emit("function f_x_to_zero (x:std_logic) return std_logic is");
    emit("begin")
+    indent_right();
 	 emit("if x = '1' then")
+    indent_right();
    emit("return '1';")
+    indent_left();
    emit("else")
+    indent_right();
 	 emit("return '0';")
+    indent_left();
 	 emit("end if;")
+    indent_left();
    emit("end function;");
+
+    emit("")
 
    emit("function f_x_to_zero (x:std_logic_vector) return std_logic_vector is");
-	 emit("variable tmp: std_logic_vector(x'length-1 downto 0);");
+    indent_right();
+   emit("variable tmp: std_logic_vector(x'length-1 downto 0);");
+    indent_left();
    emit("begin");
+    indent_right();
    emit("for i in 0 to x'length-1 loop");
+    indent_right();
    emit("if(x(i) = '1') then");
+    indent_right();
    emit("tmp(i):= '1';");
+    indent_left();
    emit("else");
+    indent_right();
    emit("tmp(i):= '0';");
+    indent_left();
    emit("end if; ");
+    indent_left();
    emit("end loop; ");
    emit("return tmp;");
+    indent_left();
    emit("end function;");
-   
-   
-
+   emit("");
    emit("function \"or\" (left, right: "..typename..") return "..typename.." is");
+   indent_right();
    emit("variable tmp: "..typename..";");
+   indent_left();
    emit("begin");
+   indent_right();
 
    for i=1,table.getn(g_portlist) do
       local port = g_portlist[i];
@@ -137,8 +179,10 @@ function cgen_vhdl_package()
       end
    end
 	 emit("return tmp;");   
+   indent_left();
    emit("end function;");
-   
+   indent_left();
+   emit("");
    emit("end package body;");
 end
 
@@ -168,8 +212,8 @@ function cgen_vhdl_port_struct(direction)
       emit(line);
    end
 
-   emit("end record;");
    indent_left();
+   emit("end record;");
    emit("");
    emit("constant c_"..periph.hdl_prefix.."_"..direction.."_registers_init_value: t_"..periph.hdl_prefix.."_"..direction.."_registers := (");
    indent_right();
@@ -188,7 +232,8 @@ function cgen_vhdl_port_struct(direction)
       
             emit(line);
          end
-      emit(");");
+   indent_left();
+   emit(");");
 
 end
 
@@ -219,20 +264,15 @@ function cgen_vhdl_header(file_name)
 			emit("use work.wbgen2_pkg.all;");
 		end
 
+        if(options.hdl_reg_style == "record_full") then
+    		emit("use work.wishbone_pkg.all;");
+        end
+
 		emit("");
 end
 
-
--- function generates VHDL entity header (ports and generics) and beginning of ARCHITECTURE block (signal and constant definitions).
-function cgen_vhdl_entity()
-	local last;
-
-   if(options.hdl_reg_style == "record") then
-      emit("use work."..periph.hdl_prefix.."_wbgen2_pkg.all;");
-      emit("\n");
-   end
-
-	emit ("entity "..periph.hdl_entity.." is");
+function cgen_vhdl_interface_declaration(keyword)
+  emit (keyword.." "..periph.hdl_entity.." is");
   indent_right();
 
   if(table.getn(g_optlist) ~= 0) then
@@ -262,7 +302,15 @@ function cgen_vhdl_entity()
   for i=1,table.getn(g_portlist) do
 		local port = g_portlist[i];
 
-    if(options.hdl_reg_style == "signals" or not port.is_reg_port) then
+        local generate = true;
+
+        if( options.hdl_reg_style == "record" and port.is_reg_port ) then
+          generate = false;
+        elseif ( options.hdl_reg_style == "record_full" and (port.is_reg_port or port.is_wb) ) then
+          generate = false;
+        end
+
+       if(generate) then
 
        -- if we have a comment associated with current port, let's emit it before the port definition.
        if(port.comment ~= nil and port.comment ~= "") then
@@ -278,24 +326,50 @@ function cgen_vhdl_entity()
        end    
 
        -- eventually append a semicolon
-       line=line..csel((i == table.getn(g_portlist)) and not (options.hdl_reg_style == "record"), "", ";");
+       line=line..csel((i == table.getn(g_portlist)) and not (options.hdl_reg_style == "record" or options.hdl_reg_style == "record_full"), "", ";");
 
        -- and spit out the line
        emit(line);
     end
   end
 
-  if(options.hdl_reg_style == "record") then
-     emit(string.format("%-40s : %-6s %s", "regs_i", "in", "t_"..periph.hdl_prefix.."_in_registers;"));
-     emit(string.format("%-40s : %-6s %s", "regs_o", "out", "t_"..periph.hdl_prefix.."_out_registers"));
+  if(options.hdl_reg_style == "record_full") then
+     emit(string.format("%-40s : %-6s %s;", "slave_i", "in", "t_wishbone_slave_in"));
+     emit(string.format("%-40s : %-6s %s;", "slave_o", "out", "t_wishbone_slave_out"));
+     emit(string.format("%-40s : %-6s %s;", "int_o", "out", "std_logic"));
+
   end
+
+  if(options.hdl_reg_style == "record" or options.hdl_reg_style == "record_full") then
+     emit(string.format("%-40s : %-6s %s;", "regs_i", "in",  "t_"..periph.hdl_prefix.."_in_registers"));
+     emit(string.format("%-40s : %-6s %s",  "regs_o", "out", "t_"..periph.hdl_prefix.."_out_registers"));
+  end
+
     
 	indent_left();
  	emit(");");
 	indent_left();
-	emit("end "..periph.hdl_entity..";");
+
+    if ( keyword == "component") then
+    	emit("end component;");
+    else
+	  emit("end "..periph.hdl_entity..";");
+    end
 	emit("");
 
+
+end
+
+-- function generates VHDL entity header (ports and generics) and beginning of ARCHITECTURE block (signal and constant definitions).
+function cgen_vhdl_entity()
+	local last;
+
+   if(options.hdl_reg_style == "record" or options.hdl_reg_style == "record_full") then
+      emit("use work."..get_pkg_name()..".all;");
+      emit("\n");
+   end
+
+   cgen_vhdl_interface_declaration("entity")
 -- generate the ARCHITECTURE block with signal definitions
 
 	emit("architecture syn of "..periph.hdl_entity.." is");
@@ -853,7 +927,7 @@ function cgen_generate_vhdl_code(tree)
 		end
  end
 
-  if(options.hdl_reg_style == "record" and options.output_package_file ~= nil) then
+  if((options.hdl_reg_style == "record" or options.hdl_reg_style == "record_full") and options.output_package_file ~= nil) then
      cgen_generate_init(options.output_package_file);
      cgen_new_snippet();
      cgen_vhdl_header(options.output_package_file);
