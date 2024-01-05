@@ -1,0 +1,23 @@
+# text files with either LF or CRLF depending on platform (Unix/Linux, and Windows respectively)
+* text=auto
+
+# Explicitly declare text files you want to always be normalized and converted
+# to native line endings on checkout.
+.git* text
+README text
+TODO text
+*.wb text
+.v text
+*.vhd text
+*.vhdl text
+*.mpf text
+
+# Declare files that will always have LF line endings
+Makefile text eol=lf
+squishy text eol=lf
+squish text eol=lf
+wbgen2 text eol=lf
+*.lua text eol=lf
+*.py text eol=lf
+*.sh text eol=lf
+*.do text eol=lf
