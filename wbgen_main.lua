@@ -214,7 +214,9 @@ if(options.output_hdl_file ~= nil) then
    if (options.lang == "vhdl") then
       cgen_generate_vhdl_code(tree);
    elseif (options.lang == "verilog") then
+	  cgen_generate_init(options.output_hdl_file);
       cgen_generate_verilog_code(tree);
+	  cgen_generate_done();
    end
 end
 
