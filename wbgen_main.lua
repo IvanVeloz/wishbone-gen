@@ -178,6 +178,7 @@ foreach_field( check_obj_names_prefixes );
 
 
 periph = fix_prefix(periph);
+periph = default_wishbone_width(periph);
 
 wbgen_count_subblocks();
 wbgen_generate_eic();										

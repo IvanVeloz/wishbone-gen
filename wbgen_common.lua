@@ -312,6 +312,20 @@ function fix_prefix(obj)
     return obj;
 end
 
+function default_wishbone_width(obj)
+	if(obj.__type ~= TYPE_PERIPH) then
+		return obj;
+	elseif(obj.wishbone_width ~= nil) then
+		local valid_widths = { [8] = true, [16] = true, [32] = true, [64] = true };
+		if not valid_widths[obj.wishbone_width] then
+			die ("Invalid wishbone bus width '"..obj.name.."'");
+		end
+	else
+		obj.wishbone_width = 32;
+	end
+	return obj;
+end
+
 function default_access(field, mytype, acc_bus, acc_dev)
     if(field.type == mytype) then
         if(field.access_bus == nil) then
