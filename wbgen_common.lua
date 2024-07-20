@@ -6,7 +6,7 @@
 VERBOSE_DEBUG = 0;
 
 -- bus properties
-DATA_BUS_WIDTH = 32;
+DATA_BUS_WIDTH = nil;					-- explicit initialization from .wb file
 SYNC_CHAIN_LENGTH = 3;
 
 -- constant definitions (block types)
@@ -323,6 +323,8 @@ function default_wishbone_width(obj)
 	else
 		obj.wishbone_width = 32;
 	end
+	obj.width = obj.wishbone_width;
+	DATA_BUS_WIDTH = obj.wishbone_width;
 	return obj;
 end
 
