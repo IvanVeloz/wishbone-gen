@@ -17,6 +17,14 @@
 -- NAME_R - read access macro extracting the value of certain field from the register: 
 -- field1_value = FIELD1_R(regs_struct->reg);
 --
+
+uint_t = {
+   [8]  = "uint8_t",
+   [16] = "uint16_t",
+   [32] = "uint32_t",
+   [64] = "uint64_t"
+}
+
 function cgen_c_field_define(field, reg)
    local prefix;
    -- anonymous field?
@@ -136,7 +144,7 @@ function cgen_c_struct()
    function pad_struct(base)
       if(cur_offset < base) then
 	 emit("/* padding to: "..base.." words */");
-	 emit("uint32_t __padding_"..pad_id.."["..(base - cur_offset).."];");
+	 emit(uint_t[DATA_BUS_WIDTH].." __padding_"..pad_id.."["..(base - cur_offset).."];");
 	 pad_id=pad_id+1;
 	 cur_offset = base;
       end
@@ -155,7 +163,7 @@ function cgen_c_struct()
 			      emit(string.format("/* [0x%x]: REG "..reg.name.." */", reg.base * DATA_BUS_WIDTH / 8));
 			      
 			      -- this is just simple :)
-			      emit("uint32_t "..string.upper(reg.c_prefix)..";");
+			      emit(uint_t[DATA_BUS_WIDTH].." "..string.upper(reg.c_prefix)..";");
 			      cur_offset = cur_offset + 1;
 			   end);
    
@@ -184,7 +192,7 @@ function cgen_c_struct()
 			      if(ram.byte_select) then
 				 emit("uint8_t "..string.upper(ram.c_prefix).." ["..(ram.size * (DATA_BUS_WIDTH/8) * math.pow(2, ram.wrap_bits)) .."];");
 			      else
-				 emit("uint32_t "..string.upper(ram.c_prefix).." ["..(ram.size * math.pow(2, ram.wrap_bits)) .."];");									
+				 emit(uint_t[DATA_BUS_WIDTH].." "..string.upper(ram.c_prefix).." ["..(ram.size * math.pow(2, ram.wrap_bits)) .."];");									
 			      end
 			   end);
    

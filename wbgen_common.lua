@@ -6,7 +6,7 @@
 VERBOSE_DEBUG = 0;
 
 -- bus properties
-DATA_BUS_WIDTH = 32;
+DATA_BUS_WIDTH = nil;					-- explicit initialization from .wb file
 SYNC_CHAIN_LENGTH = 3;
 
 -- constant definitions (block types)
@@ -310,6 +310,22 @@ function fix_prefix(obj)
 	    return obj;
 	end
     return obj;
+end
+
+function default_wishbone_width(obj)
+	if(obj.__type ~= TYPE_PERIPH) then
+		return obj;
+	elseif(obj.wishbone_width ~= nil) then
+		local valid_widths = { [8] = true, [16] = true, [32] = true, [64] = true };
+		if not valid_widths[obj.wishbone_width] then
+			die ("Invalid wishbone bus width '"..obj.name.."'");
+		end
+	else
+		obj.wishbone_width = 32;
+	end
+	obj.width = obj.wishbone_width;
+	DATA_BUS_WIDTH = obj.wishbone_width;
+	return obj;
 end
 
 function default_access(field, mytype, acc_bus, acc_dev)
